@@ -1,31 +1,32 @@
 #include <windows.h>
-#include <shlobj.h>
 #include <shellapi.h>
 #include <stdio.h>
 
+BOOL IsUserAdmin() {
+    BOOL isAdmin = FALSE;
+    HANDLE hToken = NULL;
+    
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
+        TOKEN_ELEVATION elevation;
+        DWORD size;
+        if (GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &size)) {
+            isAdmin = elevation.TokenIsElevated;
+        }
+        CloseHandle(hToken);
+    }
+    return isAdmin;
+}
+
+void GetExecutableDirectory(char* path, DWORD size) {
+    GetModuleFileName(NULL, path, size);
+    char* lastSlash = strrchr(path, '\\');
+    if (lastSlash) *lastSlash = '\0';  // 截断字符串，保留目录
+}
+
 int main() {
     char path[MAX_PATH];
-    if (!GetCurrentDirectory(MAX_PATH, path)) {
-        MessageBox(NULL, "无法获取当前目录", "错误", MB_ICONERROR);
-        return 1;
-    }
+    GetExecutableDirectory(path, MAX_PATH);
 
-    char command[MAX_PATH * 2];
-    snprintf(command, sizeof(command), "cmd.exe /K \"cd /D \"%s\"\"", path);
-
-    BOOL bIsAdmin = FALSE;
-    SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
-    PSID AdministratorsGroup;
-    if (AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &AdministratorsGroup)) {
-        CheckTokenMembership(NULL, AdministratorsGroup, &bIsAdmin);
-        FreeSid(AdministratorsGroup);
-    }
-
-    if (bIsAdmin) {
-        ShellExecute(NULL, "runas", "cmd.exe", command, NULL, SW_SHOW);
-    } else {
-        ShellExecute(NULL, "open", "cmd.exe", command, NULL, SW_SHOW);
-    }
-
+    ShellExecute(NULL, IsUserAdmin() ? "runas" : "open", "cmd.exe", NULL, path, SW_SHOW);
     return 0;
 }
