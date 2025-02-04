@@ -21,12 +21,12 @@
 
 ### 使用 MinGW 编译
 ```sh
-gcc main.c -o CMD-help.exe -mwindows
+gcc cmd-here.c -o CMD-help.exe -mwindows
 ```
 
 ### 使用 MSVC 编译
 ```sh
-cl main.c /Fe:CMD-help.exe
+cl cmd-here.c /Fe:CMD-help.exe
 ```
 
 ## 📌 使用方法
