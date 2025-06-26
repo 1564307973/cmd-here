@@ -1,6 +1,3 @@
-Below is the English version of your README, with a language selection hint at the top:
-
-```markdown
 <!-- 🌐 Language: [English](README.md) | [中文](README-CN.md) -->
 
 # CMD Launcher
