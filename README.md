@@ -1,5 +1,3 @@
-根据您的要求，我创建了英文版的 `README.md` 文件，并在开头添加了语言选择选项，同时保留了原始中文文档 `README-CN.md` 不变。以下是完整的英文 `README.md` 内容：
-
 ```markdown
 [中文文档](README-CN.md) | [English Documentation](#)
 
